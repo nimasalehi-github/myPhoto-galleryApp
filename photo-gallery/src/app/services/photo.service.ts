@@ -11,6 +11,10 @@ const { Camera, Filesystem, Storage } = Plugins;
 export class PhotoService {
   public photos: Photo[] = [];
 
+  // https://ionicframework.com/docs/angular/your-first-app/4-loading-photos#storage-api
+  private PHOTO_STORAGE: string = "photos";
+  //
+
   constructor() { }
 
   public async addNewToGallery() {
@@ -24,6 +28,13 @@ export class PhotoService {
     // Save the picture and add it to photo collection
     const savedImageFile = await this.savePicture(capturedPhoto);
     this.photos.unshift(savedImageFile);
+
+    // https://ionicframework.com/docs/angular/your-first-app/4-loading-photos#storage-api
+    Storage.set({
+      key: this.PHOTO_STORAGE,
+      value: JSON.stringify(this.photos)
+    });
+    //
   }
 
   private async savePicture(cameraPhoto: CameraPhoto) {
@@ -44,6 +55,27 @@ export class PhotoService {
       filepath: fileName,
       webviewPath: cameraPhoto.webPath
     };
+  }
+
+  public async loadSaved() {
+
+// https://ionicframework.com/docs/angular/your-first-app/4-loading-photos#storage-api
+    // Retrieve cached photo array data
+    const photoList = await Storage.get({ key: this.PHOTO_STORAGE });
+    this.photos = JSON.parse(photoList.value) || [];
+
+    // Display the photo by reading into base64 format
+    for (let photo of this.photos) {
+      // Read each saved photo's data from the Filesystem
+      const readFile = await Filesystem.readFile({
+          path: photo.filepath,
+          directory: FilesystemDirectory.Data
+      });
+
+      // Web platform only: Load the photo as base64 data
+      photo.webviewPath = `data:image/jpeg;base64,${readFile.data}`;
+    }
+// 
   }
 
   private async readAsBase64(cameraPhoto: CameraPhoto) {
