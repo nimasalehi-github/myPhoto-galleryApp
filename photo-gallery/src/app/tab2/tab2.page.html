@@ -13,7 +13,10 @@
     </ion-toolbar>
   </ion-header>
   <ion-fab vertical="bottom" horizontal="center" slot="fixed">
-    <ion-fab-button>
+
+<!-- https://ionicframework.com/docs/angular/your-first-app/2-taking-photos#photo-service -->
+    <ion-fab-button (click)="addPhotoToGallery()">
+<!--  -->
       <ion-icon name="camera"></ion-icon>
     </ion-fab-button>
   </ion-fab>
