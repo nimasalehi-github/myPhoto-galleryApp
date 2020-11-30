@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 
 import { Plugins, CameraResultType, Capacitor, FilesystemDirectory, CameraPhoto, CameraSource } from '@capacitor/core';
 
+import { Platform } from '@ionic/angular';
+
 const { Camera, Filesystem, Storage } = Plugins;
 
 @Injectable({
@@ -11,12 +13,15 @@ const { Camera, Filesystem, Storage } = Plugins;
 export class PhotoService {
   public photos: Photo[] = [];
 
-  // https://ionicframework.com/docs/angular/your-first-app/4-loading-photos#storage-api
+
   private PHOTO_STORAGE: string = "photos";
-  //
 
-  constructor() { }
+  private platform: Platform;
 
+  constructor(platform: Platform) {
+    this.platform = platform;
+  }
+  
   public async addNewToGallery() {
     // Take a photo
     const capturedPhoto = await Camera.getPhoto({
